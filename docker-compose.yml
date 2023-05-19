@@ -1,0 +1,34 @@
+version: '3.7'
+services:
+  # mendeklarasi servis item app
+  item-app:
+    # menggunakan image yang telah di build
+    image: 'ghcr.io/stevan11leonardy/item-app:v1'
+    # memetakan port 8080 yang diexpose ke 80
+    ports:
+      - 80:8080
+    # menunggu container item-db selesai baru dijalankan
+    depends_on:
+      - item-db
+    # memetakan pada satu network dengan item-db
+    networks:
+      - item-app-network
+    # restart container ketika terjadi kesalahan pada sistem
+    restart: on-failure
+  item-db:
+    # menggunakan image mongodb versi 3
+    image: 'mongo:3'
+    # memetakan storage untuk persistensi data
+    volumes:
+      - app-db:/data/db
+    # restart container ketika terjadi kesalahan pada sistem
+    restart: on-failure
+    # memetakan pada satu network dengan item-app
+    networks:
+      - item-app-network
+networks:
+  item-app-network:
+    driver: bridge
+
+volumes:
+  app-db:
