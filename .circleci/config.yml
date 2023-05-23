@@ -58,7 +58,7 @@ jobs:
       - run:
           name: "build and push image"
           command: |
-            echo "$GH_PASSWORD" | docker login -u "$GH_USERNAME" — password-stdin
+            echo "$GH_PASSWORD" | docker login ghcr.io -u "$GH_USERNAME" — password-stdin
             docker build -t $IMAGE_NAME .
             docker push $IMAGE_NAME:latest
       
