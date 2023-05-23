@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # name deployment as backend-tier
+  name: backend-tier
+  # berikan label untuk mempermudah komunikasi antar resource dalam satu app
+  labels:
+    app: karsajobs
+    tier: backend
+spec:
+  # set replica sesuai dengan kebutuhan
+  replicas: 1
+  selector:
+    matchLabels:
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: karsajobs
+        tier: backend
+    spec:
+      containers:
+        - name: karsajobs
+          image: ghcr.io/stevan11leonardy/karsajobs:latest
+          # hanya pull jika image tidak tersedia
+          imagePullPolicy: IfNotPresent
+          # expose port 8080 dari container
+          ports:
+            - containerPort: 8080
+          # set environment
+          env:
+            - name: APP_PORT
+              value: "8080"
+            - name: MONGO_HOST
+              value: data-tier
+              # ambil username dari data-tier-secret
+            - name: MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  name: data-tier-secret
+                  key: MONGO_ROOT_USERNAME
+              # ambil password dari data-tier-secret
+            - name: MONGO_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: data-tier-secret
+                  key: MONGO_ROOT_PASSWORD

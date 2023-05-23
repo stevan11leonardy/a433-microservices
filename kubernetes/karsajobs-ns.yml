@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  # membuat namespace karsajobs untuk memisahkan project 
+  name: karsajobs
+  # memberikan label untuk mempermudah pengolahan setiap resource
+  labels:
+    app: karsajobs

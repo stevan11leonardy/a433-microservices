@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # name deployment as frontend-tier
+  name: frontend-tier
+  # berikan label untuk mempermudah komunikasi antar resource dalam satu app
+  labels:
+    app: karsajobs
+    tier: frontend
+spec:
+  # set replica sesuai dengan kebutuhan
+  replicas: 1
+  selector:
+    matchLabels:
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: karsajobs
+        tier: frontend
+    spec:
+      containers:
+        - name: karsajobs-ui
+          image: ghcr.io/stevan11leonardy/karsajobs-ui:latest
+          # hanya pull jika image tidak tersedia
+          imagePullPolicy: IfNotPresent
+          # expose port 8000 dari container
+          ports:
+            - containerPort: 8000
+          # set environment
+          env:
+            - name: VUE_APP_BACKEND
+              value: http://localhost:52243

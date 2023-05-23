@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: data-tier
+  labels:
+    app: karsajobs
+spec:
+  selector:
+    matchLabels:
+      app: karsajobs
+      tier: data
+  serviceName: mongodb
+  replicas: 1
+  minReadySeconds: 10
+  template:
+    metadata:
+      labels:
+        app: karsajobs
+        tier: data
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - image: mongo:3.6
+          name: mongodb
+          # argument ketika menjalankan mongodb, karena menggunakan direktori config yang berbeda
+          args:
+            - mongod
+            - --config
+            - /config/mongod.conf
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME_FILE
+              value: /etc/mongo-credentials/MONGO_ROOT_USERNAME
+            - name: MONGO_INITDB_ROOT_PASSWORD_FILE
+              value: /etc/mongo-credentials/MONGO_ROOT_PASSWORD
+          ports:
+            - containerPort: 27017
+              name: mongodb
+          volumeMounts:
+            # persisten storage untuk menyimpan data mongodb
+            - name: mongodb-persistent-storage
+              mountPath: /data/db
+            # config volume untuk penyimpanan konfigurasi kustom dari mongodb
+            - name: mongodb-config-volume
+              readOnly: true
+              mountPath: /config
+            # secret volume untuk kredensial
+            - name: mongodb-secret-volume
+              mountPath: /etc/mongo-credentials
+              readOnly: true
+      volumes:
+        - name: mongodb-persistent-storage
+          persistentVolumeClaim:
+            claimName: mongodb-pv-claim
+        - name: mongodb-config-volume
+          configMap:
+            name: mongodb-config
+            items:
+              - key: mongo.config
+                path: mongod.conf
+        - name: mongodb-secret-volume
+          secret:
+            secretName: data-tier-secret

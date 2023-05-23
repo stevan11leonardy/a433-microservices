@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-tier
+  labels:
+    app: karsajobs
+spec:
+  ports:
+  - port: 8080
+  selector:
+    tier: backend
+  # NodePort untuk mengekpose service ke port tertentu sehingga bisa diakses
+  type: NodePort
