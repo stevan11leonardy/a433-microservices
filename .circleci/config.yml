@@ -51,7 +51,7 @@ jobs:
           path: /tmp/test-reports
   build:
     environment:
-      IMAGE_NAME: '$GH_USERNAME/karsajobs'
+      IMAGE_NAME: karsajobs
     executor: docker/docker
     steps:
       - checkout
@@ -59,7 +59,7 @@ jobs:
           name: "build and push image"
           command: |
             echo "$GH_PASSWORD" | docker login ghcr.io -u "$GH_USERNAME" --password-stdin
-            docker build -t $IMAGE_NAME .
+            docker build -t "$GH_USERNAME/$IMAGE_NAME" .
             docker push $IMAGE_NAME:latest
       
 # Invoke jobs via workflows
