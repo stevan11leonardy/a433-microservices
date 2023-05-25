@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipping
+  labels:
+    app: microservices
+spec:
+  ports:
+    - port: 3001
+  selector:
+    name: shipping
+  # NodePort untuk mengekpose service ke port tertentu sehingga bisa diakses
+  type: NodePort
